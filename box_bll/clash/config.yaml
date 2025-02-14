@@ -120,7 +120,7 @@ All: &All
   - 2.备用地址
   - 3.额外地址
 
-proxy-providers: # 此函数位置请勿变动！此为模块更新时备份恢复订阅变量范围 ↓
+proxy-providers: # ← 此函数位置请勿变动！此为模块更新时备份恢复订阅变量范围 ↓
   1.主要地址:
     <<: *p
     url: "引入您的Clash订阅链接地址"
@@ -134,7 +134,7 @@ proxy-providers: # 此函数位置请勿变动！此为模块更新时备份恢�
     url: "引入您的Clash订阅链接地址"
 # —————————
 
-proxies: # 此函数位置请勿变动！此为模块更新时备份恢复订阅变量范围 ↑
+proxies: # ← 此函数位置请勿变动！此为模块更新时备份恢复订阅变量范围 ↑
   - {name: 🌎 全球直连, type: direct, udp: true}
   - {name: ⛔️ 拒绝连接, type: reject}
   - {name: 🌐 DNS_Hijack, type: dns}
