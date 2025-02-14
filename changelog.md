@@ -5,7 +5,7 @@
 - 新增 **Zash** 面板，可自行切换
 - 配置文件重构(config.yaml)
 - 更灵活的版本文件控制(Toolbox.sh)
-- 临近搬砖，后续**可能**~~不再维护~~，祝大家开工大吉！
+- 临近搬砖，后续可能~~不再维护~~，祝大家开工大吉！
 - [Windows版本](https://github.com/MoGuangYu/Surfing/releases/tag/Windows)
 
 ## v6.8.17
