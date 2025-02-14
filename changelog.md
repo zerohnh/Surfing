@@ -1,14 +1,12 @@
-## v7.2.2
+## v7.3
 - 从**v6**版本起，强烈建议**卸载重装**以获取最优体验，并**注意备份**好所需**数据**，建议更新！
 - 整体细节优化增强
 - 降低性能开销
 - 新增 **Zash** 面板，可自行切换
 - 配置文件重构(config.yaml)
-   - 简洁高效
-   - 便于维护
-   - 支持多订阅、地区分类、负载均衡等...
-- 临近搬砖，后续可能不再维护，祝大家开工大吉！
-- [Windows版本](https://github.com/MoGuangYu/Surfing/releases/tag/Windows)
+- 更灵活的版本文件控制(Toolbox)
+- 临近搬砖，后续**可能**~~不再维护~~，祝大家开工大吉！
+- [**Windows版本**](https://github.com/MoGuangYu/Surfing/releases/tag/Windows)
 
 ## v6.8.17
 - 策略组节点分类
