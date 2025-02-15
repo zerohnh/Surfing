@@ -4,7 +4,7 @@ if [ "$(id -u)" -ne 0 ]; then
     echo "请设置以 Root 用户运行"
     exit 1
 fi
-
+source config.env
 SURFING_PATH="/data/adb/modules/Surfing/"
 MODULE_PROP="${SURFING_PATH}module.prop"
 GXSURFING_PATH="/data/adb/modules_update/Surfing"
@@ -47,7 +47,7 @@ GIT_URL="https://api.github.com/repos/MoGuangYu/Surfing/releases/latest"
 RULES_URL_PREFIX="https://raw.githubusercontent.com/MoGuangYu/rules/main/Home/"
 RULES=("YouTube.yaml" "TikTok.yaml" "Telegram.yaml" "OpenAI.yaml" "Netflix.yaml" "Microsoft.yaml" "Google.yaml" "Facebook.yaml" "Discord.yaml" "Apple.yaml")
 
-CURRENT_VERSION="v12.0"
+CURRENT_VERSION="v12.1"
 TOOLBOX_URL="https://raw.githubusercontent.com/MoGuangYu/Surfing/main/box_bll/clash/Toolbox.sh"
 TOOLBOX_FILE="/data/adb/box_bll/clash/Toolbox.sh"
 
@@ -182,11 +182,11 @@ update_module() {
 
     echo "↴"
     echo "正在获取服务器中..."
-    module_release=$(curl -s "$GIT_URL")
+    module_release=$(curl -s -H "Authorization: token $GITHUB_TOKEN" "$GIT_URL")
     module_version=$(echo "$module_release" | grep '"tag_name"' | sed -E 's/.*"([^"]+)".*/\1/')
     if [ -z "$module_version" ]; then
         echo "获取服务器失败！"
-        echo "错误：API 速率受限 / 网络异常 ！"
+        echo "错误：API 速率受限 / 网络请求异常 ！"
         return
     fi
     download_url=$(echo "$module_release" | grep '"browser_download_url".*release' | sed -E 's/.*"([^"]+)".*/\1/')
@@ -198,7 +198,7 @@ update_module() {
         return
     fi
 
-    changelog=$(curl -s "$CHANGELOG_URL")
+    changelog=$(curl -s -H "Authorization: token $GITHUB_TOKEN" "$CHANGELOG_URL")
     latest_changelog=$(echo "$changelog" | awk '/^## /{p=0} p; /^## '$module_version'$/{p=1}')
     echo "$latest_changelog"
     echo ""
@@ -296,7 +296,6 @@ update_module() {
 }
 update_module
 
-
 GITHUB_REPO="MoGuangYu/Surfing"
 SCRIPTS_PATH="box_bll/scripts"
 CLASH_PATH="box_bll/clash"
@@ -305,24 +304,6 @@ LOCAL_CLASH_DIR="/data/adb/box_bll/clash"
 CONFIG_PATH="$LOCAL_CLASH_DIR/config.yaml"
 BACKUP_FILE="$LOCAL_CLASH_DIR/subscribe_urls_backup.txt"
 LOCAL_SHA_DIR="/data/adb/box_bll/variab/sha_cache"
-
-all_up_to_date=true
-rate_limit_exceeded=false
-net_error=false
-
-echo ""
-echo "↴"
-echo "正在获取 MoGuangYu/Surfing 仓库最新提交："
-echo ""
-
-if [ ! -d "$LOCAL_SHA_DIR" ]; then
-    echo "↴"
-    echo "警告："
-    echo "检测到你是第一次获取"
-    echo "需执行遍历更新获取文件Sha值缓存"
-    echo ""
-fi
-
 FILES=(
     "$SCRIPTS_PATH/box.config|$LOCAL_SCRIPTS_DIR/box.config|backup"
     "$SCRIPTS_PATH/box.inotify|$LOCAL_SCRIPTS_DIR/box.inotify"
@@ -335,49 +316,58 @@ FILES=(
     "$CLASH_PATH/config.yaml|$LOCAL_CLASH_DIR/config.yaml|backup"
 )
 
-get_file_commit_info() {
-    file_path="$1"
-    commit_info=$(curl -s "https://api.github.com/repos/$GITHUB_REPO/commits?path=$file_path" | grep -E '"message":' | head -1 | cut -d '"' -f4)
-    if [ -z "$commit_info" ]; then
-        echo "无法获取Git $file_path 的提交信息！"
+
+check_github_token() {
+    if [[ "$GITHUB_TOKEN" != ghp_* ]]; then
+        echo "错误：GitHub 令牌无效！"
+        token_invalid=true
         return 1
     fi
+    response=$(curl -s -H "Authorization: token $GITHUB_TOKEN" "https://api.github.com/user")
+    if echo "$response" | grep -q "Bad credentials"; then
+        echo "错误：GitHub 令牌无效或已过期！"
+        token_invalid=true
+        return 1
+    elif echo "$response" | grep -q "rate limit exceeded"; then
+        rate_limit_exceeded=true
+        return 2
+    elif echo "$response" | grep -q "Not Found"; then
+        echo "错误：GitHub 用户不存在或令牌权限不足！"
+        token_invalid=true
+        return 3
+    else
+        username=$(echo "$response" | grep '"login":' | head -1 | cut -d '"' -f4)
+        email=$(echo "$response" | grep '"email":' | head -1 | cut -d '"' -f4)
+        if [ -z "$email" ] || [ "$email" = "null" ]; then
+            email_info="未提供公开邮箱"
+        else
+            email_info="$email"
+        fi       
+        echo "hi GitHub $username | $email_info ✓"
+        return 0
+    fi
+}
+
+get_file_commit_info() {
+    file_path="$1"
+    commit_info=$(curl -s -H "Authorization: token $GITHUB_TOKEN" "https://api.github.com/repos/$GITHUB_REPO/commits?path=$file_path" | grep -E '"message":' | head -1 | cut -d '"' -f4)
     echo "$commit_info"
-    return 0
 }
 
 get_file_commit_sha() {
     file_path="$1"
- 
-    http_status=$(curl -s -I -o /dev/null -w "%{http_code}" "https://api.github.com/repos/$GITHUB_REPO/commits?path=$file_path")
-    curl_status=$?
-
-    if [ $curl_status -ne 0 ]; then
-        echo "无法连接到GitHub，请检查网络连接！"
-        return 3
-    fi
-
+    
+    http_status=$(curl -s -I -H "Authorization: token $GITHUB_TOKEN" -o /dev/null -w "%{http_code}" "https://api.github.com/repos/$GITHUB_REPO/commits?path=$file_path")
+    
     if [ "$http_status" = "403" ]; then
         rate_limit_exceeded=true
-        all_up_to_date=false
         return 2
     elif [ "$http_status" != "200" ]; then
-        echo "无法获取Git $file_path 的最新提交信息！HTTP 状态码: $http_status"
         return 1
     fi
-
-    latest_sha=$(curl -s "https://api.github.com/repos/$GITHUB_REPO/commits?path=$file_path" | grep '"sha"' | head -1 | cut -d '"' -f4)
-    if [ $? -ne 0 ]; then
-        echo "获取SHA时发生网络错误！"
-        return 4
-    fi
-
-    if [ -z "$latest_sha" ]; then
-        echo "无法获取Git $file_path 的最新提交信息！"
-        return 1
-    fi
+    
+    latest_sha=$(curl -s -H "Authorization: token $GITHUB_TOKEN" "https://api.github.com/repos/$GITHUB_REPO/commits?path=$file_path" | grep '"sha"' | head -1 | cut -d '"' -f4)
     echo "$latest_sha"
-    return 0
 }
 
 backup_file() {
@@ -386,35 +376,58 @@ backup_file() {
         backup_file="${local_file}.bak"
         cp "$local_file" "$backup_file"
         echo "↴"
-        echo "Backup >>> $backup_file"
+        echo "备份已创建：$backup_file"
+    fi
+}
+
+reload_configuration() {
+    echo "↴"
+    echo "正在重载Clash配置..."
+    pid=$(pidof clash)
+    if [ -n "$pid" ]; then
+        kill -USR1 "$pid"
+        echo "配置重载成功 ✓"
+    else
+        echo "Clash进程未运行，跳过重载"
     fi
 }
 
 check_and_update_files() {
+    sha_count=0
     for file_entry in "${FILES[@]}"; do
-        if $rate_limit_exceeded || $net_error; then
-            break
-        fi
+        IFS='|' read -r _ local_path _ <<< "$file_entry"
+        local_sha_file="$LOCAL_SHA_DIR/$(basename "$local_path")_sha"
         
+        if [ -f "$local_sha_file" ]; then
+            sha_count=$((sha_count + 1))
+        fi
+    done
+    if [ "$sha_count" -lt 9 ]; then
+        echo "↴"
+        echo "警告：检测到你是第一次获取"
+        echo "      需执行遍历所有文件的更新，获取文件的Sha值缓存！"
+    fi
+    
+    echo ""
+    echo "↴"
+    echo "正在获取 MoGuangYu/Surfing 仓库最新提交："
+    
+    
+    for file_entry in "${FILES[@]}"; do
         IFS='|' read -r file_path local_path need_backup <<< "$file_entry"
         local_sha_file="$LOCAL_SHA_DIR/$(basename "$local_path")_sha"
 
         latest_sha=$(get_file_commit_sha "$file_path")
-        ret=$?
+        case $? in
+            2) 
+                rate_limit_exceeded=true
+                return
+                ;;
+            1) 
+                continue
+                ;;
+        esac
 
-        if [ $ret -eq 3 ] || [ $ret -eq 4 ]; then
-            echo "网络连接异常，终止更新！"
-            net_error=true
-            break
-
-        elif [ $ret -eq 2 ]; then
-            rate_limit_exceeded=true
-            all_up_to_date=false
-            break
-        elif [ $ret -ne 0 ]; then
-            continue
-        fi
-        
         if [ -f "$local_sha_file" ]; then
             current_sha=$(cat "$local_sha_file")
             if [ "$latest_sha" = "$current_sha" ]; then
@@ -424,90 +437,53 @@ check_and_update_files() {
 
         all_up_to_date=false
 
-        echo "GitMain >>> $(basename "$local_path") "
+        echo "↴"
+        echo "发现更新：$(basename "$local_path")"
         commit_info=$(get_file_commit_info "$file_path")
-        echo ""
-        echo "提交信息: "
-        echo "$commit_info"
-        echo "——————————"
-
+        echo "提交信息: $commit_info"
+        echo "---------------------"
         while true; do
             echo "是否同步更新？(y/n/x)"
             read -r user_response
             case "$user_response" in
-                y|Y|n|N|x|X)
+                y|Y)
+                    if [ "$need_backup" = "backup" ]; then
+                        backup_file "$local_path"
+                        if [ "$local_path" = "$CONFIG_PATH" ]; then
+                            extract_subscribe_urls
+                        fi
+                    fi
+                    echo "↴"
+                    echo "下载中..."
+                    if curl -sS -L -o "$local_path" "https://raw.githubusercontent.com/$GITHUB_REPO/main/$file_path"; then
+                        echo "$latest_sha" > "$local_sha_file"
+                        echo "更新成功 ✓"
+
+                        if [ "$local_path" = "$CONFIG_PATH" ]; then
+                            restore_subscribe_urls
+                            reload_configuration
+                        fi
+                    else
+                        net_error=true
+                        echo "下载失败！"
+                    fi
                     break
                     ;;
+                n|N)
+                    echo "跳过此次更新"
+                    break
+                    ;;
+                x|X)
+                    echo "终止此次后续文件的检查"
+                    return
+                    ;;
                 *)
-                    echo "无效选项！"
+                    echo "无效的选择！"
                     ;;
             esac
         done
-
-        if [ "$user_response" = "x" ] || [ "$user_response" = "X" ]; then
-            echo "↴"
-            echo "跳过此次所有检测"
-            break
-        elif [ "$user_response" = "n" ] || [ "$user_response" = "N" ]; then
-            echo "↴"
-            echo "跳过此"
-            echo ""
-            continue
-        fi
-        
-        if [ "$need_backup" = "backup" ]; then
-            backup_file "$local_path"
-            if [ "$local_path" = "$CONFIG_PATH" ]; then
-                extract_subscribe_urls
-            fi
-        fi
-
-        echo "↴"
-        echo "下载中..."
-        if [ ! -d "$LOCAL_SHA_DIR" ]; then
-            mkdir -p "$LOCAL_SHA_DIR" || {
-                echo "无法创建目录: $LOCAL_SHA_DIR"
-                exit 1
-            }
-        fi
-        
-        if ! curl -sS -L -o "$local_path" "https://raw.githubusercontent.com/$GITHUB_REPO/main/$file_path"; then
-            echo "下载失败，请检查网络连接！"
-            net_error=true
-            break
-        else
-            echo "更新完成 ✓"
-
-            if [ "$local_path" = "$CONFIG_PATH" ]; then
-                restore_subscribe_urls
-                reload_configuration
-            fi
-            echo "$latest_sha" > "$local_sha_file"
-        fi
-        echo ""
     done
 }
-check_and_update_files
-
-if $net_error; then
-    echo "警告："
-    echo "网络连接失败"
-    echo "请检查网络连接后重试！"
-elif $rate_limit_exceeded; then
-    echo "警告："
-    echo "GitHub API 速率限制已用尽！"
-    echo "当前 IP 请求次数过多，请更换 IP 或等待 1 小时后重试！"
-elif $all_up_to_date; then
-    echo "获取成功！"
-    echo "当前所有文件已是最新"
-else
-    if [ -d "$LOCAL_SHA_DIR" ] && [ -n "$(find "$LOCAL_SHA_DIR" -type f)" ]; then
-        echo "↴"
-        echo "部分文件已是更新"
-    fi
-fi
-echo ""
-echo "检测已完毕..."
 
 show_menu() {
     while true; do
@@ -534,9 +510,11 @@ show_menu() {
         echo ""
         echo "10. 禁用/启用 更新模块"
         echo ""
-        echo "11. 项目地址"
+        echo "11. 检查仓库最新提交"
         echo ""
-        echo "12. Exit"
+        echo "12. 项目地址"
+        echo ""
+        echo "13. Exit"
         echo "——————"
         read -r choice
         case $choice in
@@ -589,9 +567,49 @@ show_menu() {
                 esac
                 ;;
             11)
-                open_project_page
+                echo "↴"
+                echo "正在检查仓库更新..."
+                all_up_to_date=true
+                rate_limit_exceeded=false
+                net_error=false
+                token_invalid=false
+                
+                if [ -f "config.env" ]; then
+                    source config.env
+                else
+                    echo "错误：配置文件 config.env 不存在！"
+                    echo 'GITHUB_TOKEN=你的个人令牌' > config.env
+                    echo "      配置文件已创建，请打开并配置你的个人令牌"
+                fi
+                
+                check_github_token || true
+                [ ! -d "$LOCAL_SHA_DIR" ] && mkdir -p "$LOCAL_SHA_DIR"
+                check_and_update_files
+                
+                echo ""
+                echo "↴"
+                if $net_error; then
+                    echo "✗ 网络连接异常"
+                    echo "  请检查网络连接后重试！"
+                elif $token_invalid; then
+                    echo "✗ 令牌验证失败"
+                    echo "  无法检查更新，请检查GITHUB_TOKEN是否为有效值！"
+                elif $rate_limit_exceeded; then
+                    echo "✗ GitHub API限制"
+                    echo "  当前IP请求次数过多，请更换IP或等待1小时后重试！"
+                
+                elif $all_up_to_date; then
+                    echo "✓ 所有文件均为最新版本"
+                else
+                    echo "✓ 检测更新流程完成"
+                fi
+                echo ""
+                echo "检测已完毕..."
                 ;;
             12)
+                open_project_page
+                ;;
+            13)
                 exit 0
                 ;;
             *)
@@ -601,6 +619,7 @@ show_menu() {
         esac
     done
 }
+
 NO_UPDATE_ENABLED=true
 ensure_var_path() {
     if [ ! -d "$VAR_PATH" ]; then
@@ -751,7 +770,7 @@ clear_cache() {
 update_geo_database() {
     if [ "$NO_UPDATE_ENABLED" = "true" ]; then
         echo "↴"
-        echo "当前是禁用状态，不允许执行该选项！"
+        echo "当前选项是禁用状态，不允许执行该操作！"
         return
     fi
     
@@ -768,11 +787,11 @@ update_geo_database() {
         echo "距离上次更新的版本号是: $last_version"
     fi
     echo "正在获取服务器中..."
-    geo_release=$(curl -s "$GEODATA_URL")
+    geo_release=$(curl -s -H "Authorization: token $GITHUB_TOKEN" "$GEODATA_URL")
     geo_version=$(echo "$geo_release" | grep '"tag_name"' | sed -E 's/.*"([^"]+)".*/\1/')
     if [ -z "$geo_version" ]; then
         echo "获取服务器失败！"
-        echo "错误：API 速率受限 / 网络异常 ！"
+        echo "错误：API 速率受限 / 网络请求异常 ！"
         return
     fi       
     echo "获取成功！"
@@ -820,7 +839,7 @@ update_geo_database() {
 update_rules() {
     if [ "$NO_UPDATE_ENABLED" = "true" ]; then
         echo "↴"
-        echo "当前是禁用状态，不允许执行该选项！"
+        echo "当前选项是禁用状态，不允许执行该操作！"
         return
     fi
     
@@ -950,16 +969,16 @@ update_web_panel() {
         echo "距离上次更新的 Zash 版本号是: $last_zash_version"
     fi
     echo "正在获取服务器中..."
-    meta_release=$(curl -s "$METAA_URL")
+    meta_release=$(curl -s -H "Authorization: token $GITHUB_TOKEN" "$METAA_URL")
     meta_version=$(echo "$meta_release" | grep '"tag_name"' | sed -E 's/.*"([^"]+)".*/\1/')
-    yacd_release=$(curl -s "$YACDD_URL")
+    yacd_release=$(curl -s -H "Authorization: token $GITHUB_TOKEN" "$YACDD_URL")
     yacd_version=$(echo "$yacd_release" | grep '"tag_name"' | sed -E 's/.*"([^"]+)".*/\1/')
-    zash_release=$(curl -s "$ZASHD_URL")
+    zash_release=$(curl -s -H "Authorization: token $GITHUB_TOKEN" "$ZASHD_URL")
     zash_version=$(echo "$zash_release" | grep '"tag_name"' | sed -E 's/.*"([^"]+)".*/\1/')
 
     if [ -z "$meta_version" ] || [ -z "$yacd_version" ] || [ -z "$zash_version" ]; then
         echo "获取服务器失败！"
-        echo "错误：API 速率受限 / 网络异常 ！"
+        echo "错误：API 速率受限 / 网络请求异常 ！"
         return
     fi  
     echo "获取成功！"   
@@ -1163,11 +1182,11 @@ update_core() {
         last_update=""
     fi
     echo "正在获取服务器中..."
-    latest_release=$(curl -s "$BASE_URL")
+    latest_release=$(curl -s -H "Authorization: token $GITHUB_TOKEN" "$BASE_URL")
     latest_version=$(echo "$latest_release" | grep '"tag_name"' | sed -E 's/.*"([^"]+)".*/\1/')
     if [ -z "$latest_version" ]; then
         echo "获取服务器失败！"
-        echo "错误：API 速率受限 / 网络异常 ！"
+        echo "错误：API 速率受限 / 网络请求异常 ！"
         return
     fi
     download_url="${BASEE_URL}${latest_version}/${RELEASE_PATH}-${latest_version}.gz"
