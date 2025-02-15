@@ -81,18 +81,20 @@ dns:
     - "connect.rom.miui.com"
     - "localhost.ptlogin2.qq.com"
     - "+.market.xiaomi.com"
+    - "*.944246.zicp.io"
+    - "+.com.hush.yamby"
   direct-nameserver:
     - 119.29.29.29
     - 1.12.12.12
     - 223.5.5.5
     - 223.6.6.6
   nameserver-policy:
-    "RULE-SET:CN_域名":
-      - https://doh.pub/dns-query
-      - https://dns.alidns.com/dns-query
+    "RULE-SET:CN_域名,CN_IP":
+      - https://doh.pub/dns-query#🌎 全球直连
+      - https://dns.alidns.com/dns-query#🌎 全球直连
   nameserver:
-    - https://dns.google/dns-query
-    - https://cloudflare-dns.com/dns-query
+    - https://dns.google/dns-query#🌐 DNS解析
+    - https://cloudflare-dns.com/dns-query#🌐 DNS解析
 # —————————
 
 # 健康检查
@@ -107,7 +109,7 @@ p: &p
 
 # 订阅地址相关
 A: &A
-  filter: "^(?!.*(订阅|群|账户|流量|有效期|时间|官网)).*$"
+  filter: "^(?!.*(套餐|重置|剩余|到期|订阅|群|账户|流量|有效期|时间|官网)).*$"
   use:
   - 1.主要地址
   - 2.备用地址
@@ -185,6 +187,9 @@ proxy-groups:
     strategy: round-robin
     <<: *A
 
+  - name: 🌐 DNS解析
+    <<: *proxy_groups
+
   - name: 📲 电报信息
     <<: *proxy_groups
 
@@ -248,35 +253,31 @@ proxy-groups:
     <<: *All
 
   - name: 🌍 其它地区
-    filter: "^(?!.*(港|HK|hk|Hong Kong|HongKong|hongkong|日本|川日|东京|大阪|泉日|埼玉|沪日|深日|[^-]日|JP|Japan|美|波特兰|达拉斯|俄勒冈|凤凰城|费利蒙|硅谷|拉斯维加斯|洛杉矶|圣何塞|圣克拉拉|西雅图|芝加哥|US|United States|台|新北|彰化|TW|Taiwan|新加坡|坡|狮城|SG|Singapore|灾|网易|Netease|订阅|群|账户|流量|有效期|时间|官网)).*$"
+    filter: "^(?!.*(港|HK|hk|Hong Kong|HongKong|hongkong|日本|川日|东京|大阪|泉日|埼玉|沪日|深日|[^-]日|JP|Japan|美|波特兰|达拉斯|俄勒冈|凤凰城|费利蒙|硅谷|拉斯维加斯|洛杉矶|圣何塞|圣克拉拉|西雅图|芝加哥|US|United States|台|新北|彰化|TW|Taiwan|新加坡|坡|狮城|SG|Singapore|灾|网易|Netease|套餐|重置|剩余|到期|订阅|群|账户|流量|有效期|时间|官网)).*$"
     <<: *All
 # —————————
 
 rule-anchor:
   RuleDefault: &RuleDefault
     {type: http, behavior: classical, format: text, interval: 86400}
-  Domain: &Domain
-    {type: http, behavior: domain, format: mrs, interval: 86400}
-  IP: &IP
-    {type: http, behavior: ipcidr, format: mrs, interval: 86400}
 # —————————
 
 rule-providers:
   CN_IP:
-    <<: *IP
-    url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/cn.mrs"
+    <<: *RuleDefault
+    url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/refs/heads/meta/geo/geoip/classical/cn.list"
 
   private_Lan:
-    <<: *IP
-    url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/private.mrs"
+    <<: *RuleDefault
+    url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/refs/heads/meta/geo/geoip/classical/private.list"
 
   CN_域名:
-    <<: *Domain
-    url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/cn.mrs"
+    <<: *RuleDefault
+    url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/refs/heads/meta/geo/geosite/classical/cn.list"
 
   category-ads-all:
-    <<: *Domain
-    url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/category-ads-all.mrs"
+    <<: *RuleDefault
+    url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/refs/heads/meta/geo/geosite/classical/category-ads-all.list"
 
   TikTok:
     <<: *RuleDefault
@@ -325,8 +326,6 @@ rule-providers:
 
 rules:
   - DST-PORT,53,🌐 DNS_Hijack
-  - AND,((PROCESS-NAME,mihomo),(NOT,((IN-TYPE,inner)))),REJECT
-  - AND,((PROCESS-NAME,clash),(NOT,((IN-TYPE,inner)))),REJECT
   - RULE-SET,Discord,🎮 Discord
   - RULE-SET,TikTok,📸 TikTok
   - RULE-SET,YouTube,🎬 油管媒体
@@ -340,7 +339,7 @@ rules:
   - RULE-SET,Telegram,📲 电报信息
   - RULE-SET,category-ads-all,🛑 广告拦截
   - RULE-SET,CN_域名,🌎 全球直连
-  - RULE-SET,CN_IP,🌎 全球直连,no-resolve
+  - RULE-SET,CN_IP,🌎 全球直连
   - RULE-SET,private_Lan,🌎 全球直连,no-resolve
   - MATCH,🐋 漏网之鱼
 # —————————
