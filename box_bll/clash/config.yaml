@@ -81,8 +81,6 @@ dns:
     - "connect.rom.miui.com"
     - "localhost.ptlogin2.qq.com"
     - "+.market.xiaomi.com"
-    - "*.944246.zicp.io"
-    - "+.com.hush.yamby"
   direct-nameserver:
     - 119.29.29.29
     - 1.12.12.12
