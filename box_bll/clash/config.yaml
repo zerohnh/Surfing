@@ -88,7 +88,7 @@ sniffer:
 
 # 网卡模块
 tun:
-  enable: false #true 开 #false 关
+  enable: true #true 开 #false 关
   device: meta
   stack: gvisor
   dns-hijack:
