@@ -23,9 +23,9 @@ NET_PATH="/data/misc/net"
 CTR_PATH="/data/misc/net/rt_tables"
 SCRIPTS_PATH="/data/adb/box_bll/scripts/"
 BOX_PATH="/data/adb/box_bll/scripts/box.config"
-CONFIG_PATH="/data/adb/box_bll/mihomo/config.yaml"
-CORE_PATH="/data/adb/box_bll/bin/mihomo"
-COREE_PATH="/data/adb/box_bll/mihomo/"
+CONFIG_PATH="/data/adb/box_bll/clash/config.yaml"
+CORE_PATH="/data/adb/box_bll/bin/clash"
+COREE_PATH="/data/adb/box_bll/clash/"
 VAR_PATH="/data/adb/box_bll/variab/"
 BASEE_URL="https://github.com/MetaCubeX/mihomo/releases/download/"
 RELEASE_PATH="mihomo-android-arm64-v8"
@@ -41,27 +41,27 @@ YACDD_URL="https://api.github.com/repos/MetaCubeX/Yacd-meta/releases/latest"
 ZASH_DIR="${PANEL_DIR}Zash/"
 ZASH_URL="https://github.com/Zephyruso/zashboard/releases/latest/download/dist.zip"
 ZASHD_URL="https://api.github.com/repos/Zephyruso/zashboard/releases/latest"
-BACKUP_FILE="/data/adb/box_bll/mihomo/subscribe_urls_backup.txt"
+BACKUP_FILE="/data/adb/box_bll/clash/subscribe_urls_backup.txt"
 TEMP_FILE="/data/local/tmp/Surfing_update.zip"
 TEMP_DIR="/data/local/tmp/Surfing_update"
-DB_PATH="/data/adb/box_bll/mihomo/cache.db"
+DB_PATH="/data/adb/box_bll/clash/cache.db"
 SERVICE_SCRIPT="/data/adb/box_bll/scripts/box.service"
-MIHOMO_RELOAD_URL="http://127.0.0.1:9090/configs"
-MIHOMO_RELOAD_PATH="/data/adb/box_bll/mihomo/config.yaml"
+CLASH_RELOAD_URL="http://127.0.0.1:9090/configs"
+CLASH_RELOAD_PATH="/data/adb/box_bll/clash/config.yaml"
 GEOIP_URL="https://github.com/Loyalsoldier/v2ray-rules-dat/releases/latest/download/geoip.dat"
 GEOSITE_URL="https://github.com/Loyalsoldier/v2ray-rules-dat/releases/latest/download/geosite.dat"
 GEODATA_URL="https://api.github.com/repos/Loyalsoldier/v2ray-rules-dat/releases/latest"
-GEOIP_PATH="/data/adb/box_bll/mihomo/GeoIP.dat"
-GEOSITE_PATH="/data/adb/box_bll/mihomo/GeoSite.dat"
-RULES_PATH="/data/adb/box_bll/mihomo/rule/"
+GEOIP_PATH="/data/adb/box_bll/clash/GeoIP.dat"
+GEOSITE_PATH="/data/adb/box_bll/clash/GeoSite.dat"
+RULES_PATH="/data/adb/box_bll/clash/rule/"
 GIT_URL="https://api.github.com/repos/MoGuangYu/Surfing/releases/latest"
 RULES_URL_PREFIX="https://raw.githubusercontent.com/MoGuangYu/rules/main/Home/"
 RULES=("YouTube.yaml" "TikTok.yaml" "Telegram.yaml" "OpenAI.yaml" "Netflix.yaml" "Microsoft.yaml" "Google.yaml" "Facebook.yaml" "Discord.yaml" "Apple.yaml")
 
 
-CURRENT_VERSION="v13.3.3"
-TOOLBOX_URL="https://raw.githubusercontent.com/MoGuangYu/Surfing/main/box_bll/mihomo/Toolbox.sh"
-TOOLBOX_FILE="/data/adb/box_bll/mihomo/Toolbox.sh"
+CURRENT_VERSION="v13.3.5"
+TOOLBOX_URL="https://raw.githubusercontent.com/MoGuangYu/Surfing/main/box_bll/clash/Toolbox.sh"
+TOOLBOX_FILE="/data/adb/box_bll/clash/Toolbox.sh"
 
 get_remote_version() {
     remote_content=$(curl -s --connect-timeout 3 "$TOOLBOX_URL") || {
@@ -177,8 +177,8 @@ reload_configuration1() {
           return
        fi
           echo "↴"
-          echo "正在重载 mihomo 配置..."
-          curl -X PUT "$MIHOMO_RELOAD_URL" -d "{\"path\":\"$MIHOMO_RELOAD_PATH\"}"
+          echo "正在重载 clash 配置..."
+          curl -X PUT "$CLASH_RELOAD_URL" -d "{\"path\":\"$CLASH_RELOAD_PATH\"}"
        if [ $? -eq 0 ]; then
           echo "ok"
        else
@@ -299,8 +299,8 @@ update_module() {
         [ -f "$CONFIG_PATH" ] && mv "$CONFIG_PATH" "${CONFIG_PATH}.bak"
         [ -f "$BOX_PATH" ] && mv "$BOX_PATH" "${BOX_PATH}.bak"
 
-        cp -f "$TEMP_DIR/box_bll/mihomo/config.yaml" "$COREE_PATH"
-        cp -f "$TEMP_DIR/box_bll/mihomo/Toolbox.sh" "$COREE_PATH"
+        cp -f "$TEMP_DIR/box_bll/clash/config.yaml" "$COREE_PATH"
+        cp -f "$TEMP_DIR/box_bll/clash/Toolbox.sh" "$COREE_PATH"
         cp -f "$TEMP_DIR/box_bll/scripts/"* "$SCRIPTS_PATH"
         find "$TEMP_DIR" -mindepth 1 -maxdepth 1 ! -name "README.md" ! -name "Surfing_service.sh" ! -name "customize.sh" ! -name "box_bll" ! -name "META-INF" -exec cp -r {} "$SURFING_PATH" \;
         restore_subscribe_urls
@@ -362,14 +362,14 @@ update_module
 #————————————————————
 GITHUB_REPO="MoGuangYu/Surfing"
 GIT_SCRIPTS_PATH="box_bll/scripts"
-GIT_MIHOMO_PATH="box_bll/mihomo"
+GIT_clash_PATH="box_bll/clash"
 LOCAL_SCRIPTS_DIR="/data/adb/box_bll/scripts"
-LOCAL_MIHOMO_DIR="/data/adb/box_bll/mihomo"
-CONFIG_PATH="$LOCAL_MIHOMO_DIR/config.yaml"
-BACKUP_FILE="$LOCAL_MIHOMO_DIR/subscribe_urls_backup.txt"
+LOCAL_clash_DIR="/data/adb/box_bll/clash"
+CONFIG_PATH="$LOCAL_clash_DIR/config.yaml"
+BACKUP_FILE="$LOCAL_clash_DIR/subscribe_urls_backup.txt"
 LOCAL_SHA_DIR="/data/adb/box_bll/variab/sha_cache"
 FILES=(
-    "$GIT_MIHOMO_PATH/config.yaml|$LOCAL_MIHOMO_DIR/config.yaml|backup"
+    "$GIT_clash_PATH/config.yaml|$LOCAL_clash_DIR/config.yaml|backup"
     "$GIT_SCRIPTS_PATH/box.config|$LOCAL_SCRIPTS_DIR/box.config|backup"
     "$GIT_SCRIPTS_PATH/box.inotify|$LOCAL_SCRIPTS_DIR/box.inotify"
     "$GIT_SCRIPTS_PATH/box.service|$LOCAL_SCRIPTS_DIR/box.service"
@@ -450,13 +450,13 @@ backup_file() {
 
 reload_configuration() {
     echo "↴"
-    echo "正在重载mihomo配置..."
-    pid=$(pidof mihomo)
+    echo "正在重载clash配置..."
+    pid=$(pidof clash)
     if [ -n "$pid" ]; then
         kill -USR1 "$pid"
         echo "配置重载成功 ✓"
     else
-        echo "mihomo进程未运行，跳过重载"
+        echo "clash进程未运行，跳过重载"
     fi
 }
 
@@ -874,11 +874,11 @@ update_geo_database() {
         return
     fi
     echo "↴"
-    if [ -f "/data/adb/box_bll/mihomo/geosite.dat" ]; then
-        rm "/data/adb/box_bll/mihomo/geosite.dat"
+    if [ -f "/data/adb/box_bll/clash/geosite.dat" ]; then
+        rm "/data/adb/box_bll/clash/geosite.dat"
     fi
-    if [ -f "/data/adb/box_bll/mihomo/geoip.dat" ]; then
-        rm "/data/adb/box_bll/mihomo/geoip.dat"
+    if [ -f "/data/adb/box_bll/clash/geoip.dat" ]; then
+        rm "/data/adb/box_bll/clash/geoip.dat"
     fi
     echo "正在下载文件中..."
     curl -sS -o "$GEOIP_PATH" -L "$GEOIP_URL"
@@ -1223,8 +1223,8 @@ reload_configuration() {
         return
     fi
     echo "↴"
-    echo "正在重载 mihomo 配置..."
-    curl -X PUT "$MIHOMO_RELOAD_URL" -d "{\"path\":\"$MIHOMO_RELOAD_PATH\"}"
+    echo "正在重载 clash 配置..."
+    curl -X PUT "$CLASH_RELOAD_URL" -d "{\"path\":\"$CLASH_RELOAD_PATH\"}"
     if [ $? -eq 0 ]; then
         echo "ok"
     else
@@ -1283,17 +1283,17 @@ update_core() {
     fi
     echo "文件效验通过，开始进行更新..."
     mkdir -p "$TEMP_DIR"
-    gunzip -c "$TEMP_FILE" > "$TEMP_DIR/mihomo"
+    gunzip -c "$TEMP_FILE" > "$TEMP_DIR/clash"
     if [ $? -ne 0 ]; then
         echo "解压失败，文件异常！"
         exit 1
     fi
-    chown root:net_admin "$TEMP_DIR/mihomo"
-    chmod 0700 "$TEMP_DIR/mihomo"
+    chown root:net_admin "$TEMP_DIR/clash"
+    chmod 0700 "$TEMP_DIR/clash"
     if [ -f "$CORE_PATH" ]; then
         mv "$CORE_PATH" "${CORE_PATH}.bak"
     fi
-    mv "$TEMP_DIR/mihomo" "$CORE_PATH"
+    mv "$TEMP_DIR/clash" "$CORE_PATH"
     rm -rf "$TEMP_FILE" "$TEMP_DIR"
     echo "更新成功✓"
     echo
