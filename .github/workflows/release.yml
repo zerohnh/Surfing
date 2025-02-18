@@ -35,8 +35,8 @@ jobs:
       - name: Get Latest Changelog
         id: changelog
         run: |
-          latest_version=$(grep -m1 '^## v[0-9.]\+' changelog.md | sed 's/## v//')
-          sed -n "/^## v${latest_version}/,/^##/p" changelog.md | grep -v '## ' > release_notes.txt
+          latest_version=$(grep -m1 '^# v[0-9.]\+' changelog.md | sed 's/# v//')
+          sed -n "/^# v${latest_version}/,/^# v[0-9.]\+/p" changelog.md | sed -e "/^# v${latest_version}/d" -e "/^# v[0-9.]\+/d" > release_notes.txt
           echo "# What's Changed" | cat - release_notes.txt > temp && mv temp release_notes.txt
           echo "CHANGELOG=release_notes.txt" >> $GITHUB_ENV
 
