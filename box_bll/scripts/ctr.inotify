@@ -8,7 +8,6 @@ variab_dir="${base_dir}/variab"
 log_file="${base_dir}/debug.log"
 log_file_path="/data/local/tmp/"
 temp_log_file="${log_file_path}debug.log.tmp"
-state_file="${variab_dir}/service_state"
 last_check_file="${variab_dir}/last_check_time"
 last_wifi_state_file="${variab_dir}/last_wifi_state"
 
@@ -18,20 +17,29 @@ if [ ! -d "$variab_dir" ]; then
     mkdir -p "$variab_dir"
 fi
 
-scripts=$(realpath $0)
-scripts_dir=$(dirname ${scripts})
+scripts=$(realpath "$0")
+scripts_dir=$(dirname "${scripts}")
 
 events=$1
 if [ "$events" != "w" ]; then
     return
 fi
 
-source ${scripts_dir}/box.config
-source ${scripts_dir}/ctr.utils
+source "${scripts_dir}/box.config"
+
+if [ "$enable_network_service_control" != "true" ]; then
+    exit 0
+fi
+
+source "${scripts_dir}/ctr.utils"
 
 log_msg() {
     if [ "$log_enabled" = "true" ]; then
-        echo "$(date '+%Y-%m-%d %H:%M:%S') - $1" >> $log_file
+        if [ -z "$1" ]; then
+            echo "" >> "$log_file"
+        else
+            echo "$(date '+%Y-%m-%d %H:%M:%S') - $1" >> "$log_file"
+        fi
     fi
 }
 
@@ -44,7 +52,7 @@ clean_old_logs() {
         while IFS= read -r line; do
             log_date=$(echo "$line" | awk '{print $1, $2}')
             log_time=$(date -d "$log_date" +%s 2>/dev/null)
-            if [ $? -eq 0 ] && [ $((current_time - log_time)) -lt $retention_time ]; then
+            if [ $? -eq 0 ] && [ $((current_time - log_time)) -lt "$retention_time" ]; then
                 echo "$line" >> "$temp_log_file"
             fi
         done < "$log_file"
@@ -56,7 +64,7 @@ clean_old_logs
 current_time=$(date +%s)
 last_check_time=0
 if [ -f "$last_check_file" ]; then
-    last_check_time=$(cat $last_check_file)
+    last_check_time=$(cat "$last_check_file")
 fi
 
 time_diff=$((current_time - last_check_time))
@@ -67,7 +75,7 @@ if [ "$time_diff" -lt "$stability_window" ]; then
     return
 fi
 
-echo $current_time > $last_check_file
+echo "$current_time" > "$last_check_file"
 
 wifi_status=$(is_wifi_connected)
 ssid=$(get_current_ssid)
@@ -78,16 +86,17 @@ get_current_ip() {
 
 check_module_service() {
     if [ "$enable_network_service_control" = "true" ]; then
-        current_state="disabled"
-        if [ -f "$state_file" ]; then
-            current_state=$(cat $state_file)
+        if [ -f "${module_dir}/disable" ]; then
+            current_state="disabled"
+        else
+            current_state="enabled"
         fi
 
         last_ssid=""
         last_ip=""
         if [ -f "$last_wifi_state_file" ]; then
-            last_ssid=$(grep 'ssid:' $last_wifi_state_file | cut -d: -f2)
-            last_ip=$(grep 'ip:' $last_wifi_state_file | cut -d: -f2)
+            last_ssid=$(grep 'ssid:' "$last_wifi_state_file" | cut -d: -f2)
+            last_ip=$(grep 'ip:' "$last_wifi_state_file" | cut -d: -f2)
         fi
 
         if [ "$wifi_status" = "wifi" ] && [ -n "$ssid" ]; then
@@ -100,6 +109,7 @@ check_module_service() {
             done
 
             if [ -n "$current_ip" ]; then
+                log_msg ""
                 log_msg "网络波动？网络发生变化！"
                 log_msg "WiFi已连接: ${ssid}"
                 log_msg "IP地址：${current_ip}"
@@ -108,8 +118,7 @@ check_module_service() {
                 
                 if [ "$use_module_on_wifi" = "false" ]; then
                     if [ "$current_state" != "disabled" ]; then
-                        touch /data/adb/modules/Surfing/disable
-                        echo "disabled" > $state_file
+                        touch "${module_dir}/disable"
                         log_msg "当前配置：禁用"
                         log_msg "模块服务已禁用"
                     else
@@ -122,8 +131,7 @@ check_module_service() {
                         log_msg "白名单列表: ${allowed_wifi_ssids}"
                         if is_allowed_wifi "$ssid" "$allowed_wifi_ssids"; then
                             if [ "$current_state" != "enabled" ]; then
-                                rm /data/adb/modules/Surfing/disable 2>/dev/null
-                                echo "enabled" > $state_file
+                                rm "${module_dir}/disable" 2>/dev/null
                                 log_msg "当前配置：启用"
                                 log_msg "模块服务已启用"
                             else
@@ -132,8 +140,7 @@ check_module_service() {
                             fi
                         else
                             if [ "$current_state" != "disabled" ]; then
-                                touch /data/adb/modules/Surfing/disable
-                                echo "disabled" > $state_file
+                                touch "${module_dir}/disable"
                                 log_msg "未命中列表，已禁用模块服务"
                             else
                                 log_msg "未命中列表，模块当前已是禁用，无需操作"
@@ -143,8 +150,7 @@ check_module_service() {
                         log_msg "白名单模式：禁用"
                         log_msg "使用常规WiFi模块设置"
                         if [ "$current_state" != "enabled" ]; then
-                            rm /data/adb/modules/Surfing/disable 2>/dev/null
-                            echo "enabled" > $state_file
+                            rm "${module_dir}/disable" 2>/dev/null
                             log_msg "当前配置：启用"
                             log_msg "模块服务已启用"
                         else
@@ -158,22 +164,21 @@ check_module_service() {
             fi
 
         elif [ "$wifi_status" = "not_wifi" ]; then
+            log_msg ""
             log_msg "网络波动？网络发生变化！"
             log_msg "当前WiFi已断开！"
             if [ "$use_module_on_wifi_disconnect" = "true" ]; then
                 if [ "$current_state" != "enabled" ]; then
-                    rm /data/adb/modules/Surfing/disable 2>/dev/null
-                    echo "enabled" > $state_file
+                    rm "${module_dir}/disable" 2>/dev/null
                     log_msg "当前配置：启用"
                     log_msg "模块服务已启用"
                 else
-                log_msg "当前配置：启用"
-                log_msg "当前模块服务已是启用，无需操作"
+                    log_msg "当前配置：启用"
+                    log_msg "当前模块服务已是启用，无需操作"
                 fi
             else
                 if [ "$current_state" != "disabled" ]; then
-                    touch /data/adb/modules/Surfing/disable
-                    echo "disabled" > $state_file
+                    touch "${module_dir}/disable"
                     log_msg "当前配置：禁用"
                     log_msg "模块服务已禁用"
                 else
