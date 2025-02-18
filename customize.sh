@@ -7,8 +7,8 @@ SURFING_PATH="/data/adb/modules/Surfing/"
 SCRIPTS_PATH="/data/adb/box_bll/scripts/"
 NET_PATH="/data/misc/net"
 CTR_PATH="/data/misc/net/rt_tables"
-CONFIG_FILE="/data/adb/box_bll/mihomo/config.yaml"
-BACKUP_FILE="/data/adb/box_bll/mihomo/subscribe_urls_backup.txt"
+CONFIG_FILE="/data/adb/box_bll/clash/config.yaml"
+BACKUP_FILE="/data/adb/box_bll/clash/subscribe_urls_backup.txt"
 
 if [ "$BOOTMODE" != true ]; then
   abort "Error: 请在 Magisk Manager / KernelSU Manager / APatch 中安装"
@@ -67,16 +67,16 @@ if [ -d /data/adb/box_bll ]; then
   /data/adb/box_bll/scripts/box.service stop > /dev/null 2>&1
   sleep 1.5
   
-  if [ -d /data/adb/box_bll/clash ]; then
-    mv /data/adb/box_bll/clash /data/adb/box_bll/mihomo
+  if [ -d /data/adb/box_bll/mihomo ]; then
+    mv /data/adb/box_bll/mihomo /data/adb/box_bll/clash
   fi
-  if [ -f /data/adb/box_bll/bin/clash ]; then
-    mv /data/adb/box_bll/bin/clash /data/adb/box_bll/bin/mihomo
+  if [ -f /data/adb/box_bll/bin/mihomo ]; then
+    mv /data/adb/box_bll/bin/mihomo /data/adb/box_bll/bin/clash
   fi
 
-  if [ -d /data/adb/box_bll/mihomo ]; then
+  if [ -d /data/adb/box_bll/clash ]; then
     extract_subscribe_urls
-    cp /data/adb/box_bll/mihomo/config.yaml /data/adb/box_bll/mihomo/config.yaml.bak
+    cp /data/adb/box_bll/clash/config.yaml /data/adb/box_bll/clash/config.yaml.bak
     ui_print "- 配置文件 config.yaml 已备份 bak"
   fi
   if [ -d /data/adb/box_bll/scripts ]; then
@@ -84,11 +84,11 @@ if [ -d /data/adb/box_bll ]; then
     ui_print "- 用户配置 box.config 已备份 bak"
   fi
 
-  cp -f "$MODPATH/box_bll/mihomo/config.yaml" /data/adb/box_bll/mihomo/
-  cp -f "$MODPATH/box_bll/mihomo/Toolbox.sh" /data/adb/box_bll/mihomo/
+  cp -f "$MODPATH/box_bll/clash/config.yaml" /data/adb/box_bll/clash/
+  cp -f "$MODPATH/box_bll/clash/Toolbox.sh" /data/adb/box_bll/clash/
   cp -f "$MODPATH/box_bll/scripts/"* /data/adb/box_bll/scripts/
   rm -rf "$MODPATH/box_bll"
-  rm -rf /data/adb/box_bll/clash
+  rm -rf /data/adb/box_bll/mihomo
   restore_subscribe_urls
   ui_print "- 正在重启服务..."
   /data/adb/box_bll/scripts/box.service start > /dev/null 2>&1
