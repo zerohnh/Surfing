@@ -1,8 +1,8 @@
 # Surfing
 
 <h1 align="center">
-  <img src="./folder/Logo.png" alt="MIHOMOMETA" width="200">
-  <br>MIHOMOMETA<br>
+  <img src="./folder/Logo.png" alt="CLASHMETA" width="200">
+  <br>CLASHMETA<br>
 </h1>
 
 <h3 align="center">Magisk, Kernelsu, APatch</h3>
@@ -11,8 +11,8 @@
     <a href="https://github.com/MoGuangYu/Surfing/releases/tag/Prerelease-Alpha">
         <img alt="Android" src="https://img.shields.io/badge/Module Latestsnapshot-F05033.svg?logo=android&logoColor=white">
     </a>
-    <a href="https://github.com/MoGuangYu/Surfing/releases/tag/v7.3.5">
-        <img alt="Downloads" src="https://img.shields.io/github/downloads/MoGuangYu/Surfing/v7.3.5/total?label=Download@v7.3.5&labelColor=00b56a&logo=git&logoColor=white">
+    <a href="https://github.com/MoGuangYu/Surfing/releases/tag/v7.3.6">
+        <img alt="Downloads" src="https://img.shields.io/github/downloads/MoGuangYu/Surfing/v7.3.6/total?label=Download@v7.3.6&labelColor=00b56a&logo=git&logoColor=white">
     </a>
 </div>
 
