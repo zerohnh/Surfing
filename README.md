@@ -1,8 +1,8 @@
 # Surfing
 
 <h1 align="center">
-  <img src="./folder/Logo.png" alt="CLASHMETA" width="200">
-  <br>CLASHMETA<br>
+  <img src="./folder/Logo.png" alt="MIHOMOMETA" width="200">
+  <br>MIHOMOMETA<br>
 </h1>
 
 <h3 align="center">Magisk, Kernelsu, APatch</h3>
@@ -11,8 +11,8 @@
     <a href="https://github.com/MoGuangYu/Surfing/releases/tag/Prerelease-Alpha">
         <img alt="Android" src="https://img.shields.io/badge/Module Latestsnapshot-F05033.svg?logo=android&logoColor=white">
     </a>
-    <a href="https://github.com/MoGuangYu/Surfing/releases/tag/v6.8.17">
-        <img alt="Downloads" src="https://img.shields.io/github/downloads/MoGuangYu/Surfing/v6.8.17/total?label=Download@v6.8.17&labelColor=00b56a&logo=git&logoColor=white">
+    <a href="https://github.com/MoGuangYu/Surfing/releases/tag/v7.3.5">
+        <img alt="Downloads" src="https://img.shields.io/github/downloads/MoGuangYu/Surfing/v7.3.5/total?label=Download@v7.3.5&labelColor=00b56a&logo=git&logoColor=white">
     </a>
 </div>
 
@@ -20,13 +20,13 @@
 
 **English** | [简体中文](./README_CN.md)
 
-This project is a [Magisk](https://github.com/topjohnwu/Magisk), [Kernelsu](https://github.com/tiann/KernelSU), [APatch](https://github.com/bmax121/APatch) module for Clash, sing-box, v2ray, xray, hysteria. It supports REDIRECT (TCP only), TPROXY (TCP + UDP) transparent proxy, TUN (TCP + UDP), and hybrid mode REDIRECT (TCP) + TUN (UDP) proxy.
+This project is a [Magisk](https://github.com/topjohnwu/Magisk), [Kernelsu](https://github.com/tiann/KernelSU), [APatch](https://github.com/bmax121/APatch) module for Clash, mihomo, sing-box, v2ray, xray, hysteria. It supports REDIRECT (TCP only), TPROXY (TCP + UDP) transparent proxy, TUN (TCP + UDP), and hybrid mode REDIRECT (TCP) + TUN (UDP) proxy.
 
 Based on upstream integration for one-stop service, ready to use. Suitable for:
 - Lazy people
 - Beginners
 
-The project's theme and configuration focus on [Clash.Meta](https://github.com/MetaCubeX/Clash.Meta).
+The project's theme and configuration focus on [mihomo.Meta](https://github.com/MetaCubeX/Clash.Meta).
 
 This module needs to be used in a Magisk/Kernelsu environment. If you don't know how to configure the required environment, you might need applications like ClashForAndroid, v2rayNG, surfboard, SagerNet, AnXray.
 
@@ -74,24 +74,25 @@ Please decide whether to use the Surfing module only after clearly understanding
 <details>
 <summary>1. First Use</summary>
 
-- After installing the module, you don't need to restart the device. You can use the `Toolbox` integration to refresh the update status of the client
-- Add the subscription address in `config.yaml` and reload the configuration.
-- Due to network reasons, all rules may not be downloaded automatically. Please manually update/download the rule files.
+- After installing the module, no need to restart the device. You can use `Toolbox` to integrate and refresh the client update status.
+- After installation is complete, add your subscription address to `config.yaml` and restart the module service via the switch.
+- Due to network reasons, all **rules**/**subscriptions** may not be downloaded automatically. Please manually refresh in the panel.
   - If the above fails, ensure your network environment is normal.
-- Web App: [Download](https://github.com/MoGuangYu/Surfing/raw/main/folder/Web_v5.5_release.apk) | [View Source Code](./folder/main.lua)
-  - This is a graphical auxiliary tool for convenient browsing and managing backend routing data, with no additional purposes.
+- Web App: [Download](https://github.com/MoGuangYu/Surfing/raw/main/folder/Web_v5.5_release.apk) | [View Source](./folder/main.lua)
+  - It is only a graphical auxiliary tool used for portable browsing and managing the backend route data, with no other unnecessary uses.
 
-> The module has a built-in GUI that can be accessed locally via a browser or used online with the app, with no essential difference between the two.
+> The module has a built-in GUI that can be accessed locally via a browser or used online via the app. There is essentially no difference between the two.
 
 </details>
 
 #
 
 <details>
-<summary>2. Control Operation</summary>
+<summary>2. Controlling Operation</summary>  
 
-- The service can be controlled in real-time through the module switch to turn it on/off.
-- You can add a control switch for the module to the system status bar.  
+- Can be controlled via **WiFi SSID** network toggling  
+- Use the module switch to enable/disable the service in real time  
+- Add a control switch to the system status bar
   
 <img src="./folder/KAKJFS.jpg" alt="KJFS" width="300">
 
@@ -114,31 +115,34 @@ Please decide whether to use the Surfing module only after clearly understanding
 #
 
 <details>
-<summary>3. Geo Database</summary>
+<summary>3. Routing Rules</summary>  
 
-GitHub Actions automatically build daily at 6 AM Beijing time, ensuring the latest rules. [Wiki](https://github.com/MetaCubeX/meta-rules-dat)
+GitHub Actions automatically builds updates at 6 AM Beijing time every day to ensure the latest rules. [Wiki](https://github.com/MetaCubeX/meta-rules-dat)  
 
-> Used for routing rule matching to achieve accurate diversion. Updates will always point to the latest version, so you only need to update the file once a month.
+> Routing rules use online links and update automatically every 24 hours.
 
 </details>
 
 #
 
 <details>
-<summary>4. Subsequent Updates</summary>
+<summary>4. Future Updates</summary>  
 
-- If you use all default configurations, the updates will be seamless
-- Supports online module updates within the client, no reboot required after updates; however, module switch control for enabling/disabling will ~~temporarily fail~~, still requiring a reboot. It is recommended to use Toolbox for updates
-- During the update, the Clash.Meta config.yaml file will be backed up to
-   - `/data/adb/box_bll/clash/config.yaml.bak`
-- During the update, old user configuration files will be backed up to
-   - `/data/adb/box_bll/scripts/box.config.bak`
-- The following are not included in module updates:
-   - Geo database files
-   - Bin files
-   - Web resources
+- If you use all the default configurations, updates will be seamless.  
+- The module supports online updates within the client. After updating, no reboot is required; however, the module switch's enable/disable control ~~may temporarily not work and still require a reboot~~ or can be updated via Toolbox.  
+- During updates, the configuration file will be backed up to:  
+   - `config.yaml.bak`  
+- During updates, the old user configuration files will be backed up to:  
+   - `box.config.bak`  
+- During updates, your subscription URLs will be automatically extracted and backed up to:  
+   - `subscribe_urls_backup.txt`  
+   - The backup will be automatically extracted and restored into the new configuration, applicable when using the default configuration file.  
+- The module update does NOT include:  
+   - Geo database files  
+   - Binary files  
+   - Web resources  
 
-> Ps: Mainly follows upstream updates and distributes some configurations
+> Note: Updates mainly follow upstream changes and distribute some configurations.
 
 </details>
 
@@ -165,11 +169,11 @@ Android user group ID identifiers:
 2. Tun Mode
 - Enabled by default
 
-> Recommended to enable under WiFi. If not necessary, it can be disabled. Do not use black/whitelist before enabling this mode.
+> It is recommended to keep it enabled. It can be disabled if not needed, but do not use black/white lists when this mode is enabled.
 
 3. Routing Rules
 - Bypass mainland China
-- The rules are maintained by the developer and can satisfy most usage needs.
+- It basically meets the needs of most daily usage.
 
 > Black/whitelist is not significant unless strictly required. The module's built-in configuration is sufficient.
 

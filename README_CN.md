@@ -1,8 +1,8 @@
 # Surfing
 
 <h1 align="center">
-  <img src="./folder/Logo.png" alt="CLASHMETA" width="200">
-  <br>CLASHMETA<br>
+  <img src="./folder/Logo.png" alt="MIHOMOMETA" width="200">
+  <br>MIHOMOMETA<br>
 </h1>
 
 <h3 align="center">Magisk、Kernelsu、APatch</h3>
@@ -11,8 +11,8 @@
     <a href="https://github.com/MoGuangYu/Surfing/releases/tag/Prerelease-Alpha">
         <img alt="Android" src="https://img.shields.io/badge/Module Latestsnapshot-F05033.svg?logo=android&logoColor=white">
     </a>
-    <a href="https://github.com/MoGuangYu/Surfing/releases/tag/v6.8.17">
-        <img alt="Downloads" src="https://img.shields.io/github/downloads/MoGuangYu/Surfing/v6.8.17/total?label=Download@v6.8.17&labelColor=00b56a&logo=git&logoColor=white">
+    <a href="https://github.com/MoGuangYu/Surfing/releases/tag/v7.3.5">
+        <img alt="Downloads" src="https://img.shields.io/github/downloads/MoGuangYu/Surfing/v7.3.5/total?label=Download@v7.3.5&labelColor=00b56a&logo=git&logoColor=white">
     </a>
 </div>
 
@@ -20,18 +20,18 @@
 
 [English](./README.md) | **简体中文**
 
-  本项目为 Clash、sing-box、v2ray、xray、hysteria 的 [Magisk](https://github.com/topjohnwu/Magisk) 、 [Kernelsu](https://github.com/tiann/KernelSU) 、 [APatch](https://github.com/bmax121/APatch) 模块。支持 REDIRECT（仅 TCP）、TPROXY（TCP + UDP）透明代理，支持 TUN（TCP + UDP）亦可 REDIRECT（TCP）+ TUN（UDP） 混合模式代理。
+  本项目为 Clash、mihomo、sing-box、v2ray、xray、hysteria 的 [Magisk](https://github.com/topjohnwu/Magisk) 、 [Kernelsu](https://github.com/tiann/KernelSU) 、 [APatch](https://github.com/bmax121/APatch) 模块。支持 REDIRECT（仅 TCP）、TPROXY（TCP + UDP）透明代理，支持 TUN（TCP + UDP）亦可 REDIRECT（TCP）+ TUN（UDP） 混合模式代理。
   
   基于上游为集成式一体服务、即刷即用   
   此适用以下人群：
   - 懒癌
   - 小白
 
-  项目主题及配置仅围绕 [Clash.Meta](https://github.com/MetaCubeX/Clash.Meta)  
+  项目主题及配置仅围绕 [mihomo.Meta](https://github.com/MetaCubeX/Clash.Meta)  
   
   本模块需在 Magisk/Kernelsu 环境进行使用，如果你不知道如何配置所需环境，你可能需要像 ClashForAndroid、v2rayNG、surfboard、SagerNet、AnXray 等应用程序。  
   
-  [Windows 用户](./win_README.md)
+  [Windows 用户](https://github.com/MoGuangYu/Surfing/releases/tag/Windows)
 
 # Surfing用户声明及免责
 
@@ -78,8 +78,8 @@
 <summary>1. 首次使用</summary>
 
 - 安装模块后无需重启设备，可使用`Toolbox`整合并刷新客户端的更新状态
-- 于`config.yaml`添加订阅地址，重载一下配置
-- 可能因网络原因不会自动下载完全部规则，请手动 更新/下载 规则文件
+- 首次安装完成后，于`config.yaml`添加你的订阅地址，并通过开关重启一下模块服务
+- 可能因网络原因不会自动下载完全部 **规则**/**订阅**，请至面板手动刷新一下
   - 如上述失败，并确保你的网络环境正常
 - Web App：[Download](https://github.com/MoGuangYu/Surfing/raw/main/folder/Web_v5.5_release.apk) | [查看源码](./folder/main.lua)
   - 仅为图形辅助工具，用于便携浏览及管理后台路由数据，并无其它多余用途
@@ -93,6 +93,7 @@
 <details>
 <summary>2. 控制运行</summary>
 
+- 可通过 **WiFi SDID** 网络控制启停
 - 可通过模块开关进行 关闭/开启 控制运行服务实时生效
 - 可向系统状态栏添加模块的控制开关  
   
@@ -117,11 +118,11 @@
 #
 
 <details>
-<summary>3. Geo 数据库</summary>
+<summary>3. 路由规则</summary>
 
 GitHub Actions 北京时间每天早上 6 点自动构建，保证规则最新  [Wiki](https://github.com/MetaCubeX/meta-rules-dat)  
 
-> 用于路由规则匹配，实现精准分流，更新会一直指向最新版本，因此每个月只需更新一次文件即可
+> 路由规则全使用在线链接，24小时自动更新
 
 </details>
 
@@ -131,11 +132,14 @@ GitHub Actions 北京时间每天早上 6 点自动构建，保证规则最新  
 <summary>4. 后续更新</summary>
 
 - 如果你全部使用默认配置，更新将是无感
-- 支持在客户端中在线更新模块，更新后无须重启，模块开关控制 启用/关闭 ~~会临时失效，仍需重启~~ 建议使用 Toolbox 更新
+- 支持在客户端中在线更新模块，更新后无须重启，模块开关控制 启用/关闭 ~~会临时失效，仍需重启~~ 亦或使用 Toolbox 更新
 - 更新时 Clash.Meta config.yaml 配置文件会备份至
-   - `/data/adb/box_bll/clash/config.yaml.bak`
+   - `config.yaml.bak`
 - 更新时会备份旧文件用户配置，至
-   - `/data/adb/box_bll/scripts/box.config.bak`
+   - `box.config.bak`
+- 更新时会自动提取你的订阅地址并备份，至
+   - `subscribe_urls_backup.txt`
+   - 自动提取备份并恢复至新配置中，适用于使用默认配置文件的
 - 更新模块时不包含：
    - Geo数据库文件
    - bin文件
@@ -168,11 +172,11 @@ GitHub Actions 北京时间每天早上 6 点自动构建，保证规则最新  
 二、Tun模式
 - 默认开启
 
-> WiFi下推荐开启，如非特殊需要可不开启，使用该模式前请勿使用黑白名单
+> 推荐开启，如非特殊需要可不开启，使用该模式前请勿使用黑白名单
 
 三、路由规则
 - 为大陆饶行
-- 规则由本人亲自维护的，基本能满足大多数使用需求
+- 基本能满足大多数日常使用需求
 
 > 如非特别严格的要求，黑白名单意义不大，使用模块自带配置即可
 
