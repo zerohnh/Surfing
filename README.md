@@ -1,8 +1,8 @@
 # Surfing
 
 <h1 align="center">
-  <img src="./folder/Logo.png" alt="CLASHMETA" width="200">
-  <br>CLASHMETA<br>
+  <img src="./folder/Box.svg" alt="BOXMETA" width="200">
+  <br>BOXMETA<br>
 </h1>
 
 <h3 align="center">Magisk, Kernelsu, APatch</h3>
@@ -26,7 +26,7 @@ Based on upstream integration for one-stop service, ready to use. Suitable for:
 - Lazy people
 - Beginners
 
-The project's theme and configuration focus on [mihomo.Meta](https://github.com/MetaCubeX/Clash.Meta).
+The project's theme and configuration focus on [clash.Meta](https://github.com/MetaCubeX/Clash.Meta).
 
 This module needs to be used in a Magisk/Kernelsu environment. If you don't know how to configure the required environment, you might need applications like ClashForAndroid, v2rayNG, surfboard, SagerNet, AnXray.
 

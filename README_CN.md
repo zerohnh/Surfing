@@ -1,8 +1,8 @@
 # Surfing
 
 <h1 align="center">
-  <img src="./folder/Logo.png" alt="CLASHMETA" width="200">
-  <br>CLASHMETA<br>
+  <img src="./folder/Box.svg" alt="BOXMETA" width="200">
+  <br>BOXMETA<br>
 </h1>
 
 <h3 align="center">Magisk、Kernelsu、APatch</h3>
@@ -27,7 +27,7 @@
   - 懒癌
   - 小白
 
-  项目主题及配置仅围绕 [mihomo.Meta](https://github.com/MetaCubeX/Clash.Meta)  
+  项目主题及配置仅围绕 [clash.Meta](https://github.com/MetaCubeX/Clash.Meta)  
   
   本模块需在 Magisk/Kernelsu 环境进行使用，如果你不知道如何配置所需环境，你可能需要像 ClashForAndroid、v2rayNG、surfboard、SagerNet、AnXray 等应用程序。  
   
