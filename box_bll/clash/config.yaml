@@ -230,6 +230,8 @@ proxy-groups:
     type: select
     proxies:
       - ⛔️ 拒绝连接
+      - 🌎 全球直连
+      - REJECT-DROP
       - PASS #匹配规则
 
   - name: 🐋 漏网之鱼
