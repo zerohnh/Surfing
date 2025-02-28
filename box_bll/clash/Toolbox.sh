@@ -59,7 +59,7 @@ RULES_URL_PREFIX="https://raw.githubusercontent.com/MoGuangYu/rules/main/Home/"
 RULES=("YouTube.yaml" "TikTok.yaml" "Telegram.yaml" "OpenAI.yaml" "Netflix.yaml" "Microsoft.yaml" "Google.yaml" "Facebook.yaml" "Discord.yaml" "Apple.yaml")
 
 
-CURRENT_VERSION="v13.3.5"
+CURRENT_VERSION="v13.3.6"
 TOOLBOX_URL="https://raw.githubusercontent.com/MoGuangYu/Surfing/main/box_bll/clash/Toolbox.sh"
 TOOLBOX_FILE="/data/adb/box_bll/clash/Toolbox.sh"
 
@@ -234,10 +234,11 @@ update_module() {
     escaped_version=$(echo "$module_version" | sed 's/\./[.]/g')
     latest_changelog=$(echo "$changelog" | awk -v ver="$escaped_version" '
         /^# / {
-            if ($0 ~ "^# " ver "( |$)") {
+            if ($0 ~ ("^# " ver)) {
                 p=1
                 next
-            } else {
+            }
+            else if ($0 ~ "^# v") {
                 p=0
             }
         }
