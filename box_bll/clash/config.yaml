@@ -280,9 +280,9 @@ rule-providers:
     <<: *RuleDefault
     url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/refs/heads/meta/geo/geosite/classical/cn.list"
 
-  category-ads-all:
+  anti-ads-all:
     <<: *RuleDefault
-    url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/refs/heads/meta/geo/geosite/classical/category-ads-all.list"
+    url: "https://raw.githubusercontent.com/privacy-protection-tools/anti-AD/master/anti-ad-surge.txt"
 
   TikTok:
     <<: *RuleDefault
@@ -331,6 +331,7 @@ rule-providers:
 
 rules:
   - DST-PORT,53,🌐 DNS_Hijack
+  - RULE-SET,anti-ads-all,🛑 广告拦截
   - RULE-SET,Discord,🎮 Discord
   - RULE-SET,TikTok,📸 TikTok
   - RULE-SET,YouTube,🎬 油管媒体
@@ -342,7 +343,6 @@ rules:
   - RULE-SET,Apple,🍎 苹果服务
   - RULE-SET,Microsoft,Ⓜ️ 微软服务
   - RULE-SET,Telegram,📲 电报信息
-  - RULE-SET,category-ads-all,🛑 广告拦截
   - RULE-SET,CN_域名,🌎 全球直连
   - RULE-SET,CN_IP,🌎 全球直连
   - RULE-SET,private_Lan,🌎 全球直连,no-resolve
