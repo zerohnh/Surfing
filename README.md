@@ -80,7 +80,7 @@ Please decide whether to use the Surfing module only after clearly understanding
 - After installation is complete, add your subscription address to `config.yaml` and restart the module service via the switch.
 - Due to network reasons, all **rules**/**subscriptions** may not be downloaded automatically. Please manually refresh in the panel.
   - If the above fails, ensure your network environment is normal.
-- Web App: [Download](https://github.com/MoGuangYu/Surfing/raw/main/folder/Web_v5.5_release.apk) | [View Source](./folder/main.lua)
+- Web App: [Download](https://github.com/MoGuangYu/Surfing/raw/main/folder/Web.apk) | [View Source](./folder/main.lua)
   - It is only a graphical auxiliary tool used for portable browsing and managing the backend route data, with no other unnecessary uses.
 
 > The module has a built-in GUI that can be accessed locally via a browser or used online via the app. There is essentially no difference between the two.

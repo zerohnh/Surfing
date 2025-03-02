@@ -83,7 +83,7 @@
 - 首次安装完成后，于`config.yaml`添加你的订阅地址，并通过开关重启一下模块服务
 - 可能因网络原因不会自动下载完全部 **规则**/**订阅**，请至面板手动刷新一下
   - 如上述失败，并确保你的网络环境正常
-- Web App：[Download](https://github.com/MoGuangYu/Surfing/raw/main/folder/Web_v5.5_release.apk) | [查看源码](./folder/main.lua)
+- Web App：[Download](https://github.com/MoGuangYu/Surfing/raw/main/folder/Web.apk) | [查看源码](./folder/main.lua)
   - 仅为图形辅助工具，用于便携浏览及管理后台路由数据，并无其它多余用途
 
 > 模块已内置 Gui 可通过浏览器本地访问使用，亦或者使用 App 在线访问使用，两者本质上并无差异
